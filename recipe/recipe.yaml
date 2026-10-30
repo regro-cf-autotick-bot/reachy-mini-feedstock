@@ -2,7 +2,6 @@ schema_version: 1
 
 context:
   version: "1.13.0"
-  python_min: "3.11"
 
 package:
   name: reachy-mini
@@ -64,7 +63,10 @@ requirements:
     # Upstream pins >=1.0.26.3, but conda-forge ships 1.0.26.0 (the .x patch
     # releases are PyPI-only); relaxed like the other pins above.
     - libusb-package >=1.0.26
-    - pip >=26.1
+    # pip vendors its own CA bundle, so upstream pins both pip and certifi
+    # to the releases that distrust the compromised eMudhra intermediates.
+    - pip >=26.2.2
+    - certifi >=2026.10.19
     - rich
     - questionary
     - websockets >=12,<16
@@ -115,7 +117,9 @@ requirements:
 
 tests:
   - python:
-      python_version: ${{ python_min }}.*
+      python_version:
+        - ${{ python_min }}.*
+        - "*"
       imports:
         - reachy_mini
       # The wheel METADATA pins several deps with == while the conda
